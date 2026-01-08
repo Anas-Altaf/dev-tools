@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SMTP Tester</title>
+
+  <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eef1f6;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #111827;
+    }
+
+    .container {
+      width: 520px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: 22px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-bottom: 22px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    input,
+    textarea,
+    select,
+    button {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #6366f1;
+    }
+
+    textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    button {
+      border: none;
+      background: #6366f1;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #4f46e5;
+    }
+
+    .status {
+      margin-top: 14px;
+      font-size: 13px;
+      text-align: center;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>SMTP Test Tool</h1>
+
+    <!-- SMTP CONFIG -->
+    <div class="section">
+      <div class="section-title">SMTP Configuration</div>
+
+      <input id="host" placeholder="SMTP Host (e.g. smtp.gmail.com)" />
+
+      <div class="grid">
+        <input id="username" placeholder="Username / Email" />
+        <input id="password" type="password" placeholder="Password / App Password" />
+      </div>
+
+      <div class="grid">
+        <input id="port" placeholder="Port (e.g. 587)" />
+        <select id="secure">
+          <option value="true">TLS / SSL</option>
+          <option value="false">No Encryption</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- MAIL -->
+    <div class="section">
+      <div class="section-title">Mail</div>
+
+      <div class="grid">
+        <input id="from" placeholder="From Email" />
+        <input id="to" placeholder="To Email" />
+      </div>
+
+      <input id="subject" placeholder="Subject" />
+      <textarea id="body" placeholder="Message body"></textarea>
+    </div>
+
+    <button onclick="sendEmail()">Send Email</button>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    function sendEmail() {
+      const status = document.getElementById("status");
+      status.textContent = "Sending…";
+
+      Email.send({
+        Host: document.getElementById("host").value,
+        Username: document.getElementById("username").value,
+        Password: document.getElementById("password").value,
+        Port: document.getElementById("port").value,
+        Secure: document.getElementById("secure").value === "true",
+        To: document.getElementById("to").value,
+        From: document.getElementById("from").value,
+        Subject: document.getElementById("subject").value,
+        Body: document.getElementById("body").value
+      })
+      .then(msg => {
+        status.textContent = "Sent successfully ✔";
+      })
+      .catch(err => {
+        status.textContent = "Failed ✖";
+      });
+    }
+  </script>
+
+</body>
+</html>
