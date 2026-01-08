@@ -247,6 +247,12 @@
             font-size: 15px;
             font-weight: 600;
             transition: all 0.3s;
+            position: relative;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .btn-primary {
@@ -254,7 +260,7 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #2980b9;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
@@ -265,7 +271,7 @@
             color: white;
         }
 
-        .btn-success:hover {
+        .btn-success:hover:not(:disabled) {
             background: #229954;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
@@ -316,6 +322,12 @@
             border-left-color: #e74c3c;
             background: #fce8e6;
             color: #e74c3c;
+        }
+
+        .result-content.info {
+            border-left-color: #3498db;
+            background: #e8f4f8;
+            color: #2980b9;
         }
 
         .empty-state {
@@ -381,6 +393,21 @@
             color: #2c3e50;
         }
 
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -396,6 +423,20 @@
 
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+
+        .warning-box strong {
+            display: block;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -413,17 +454,38 @@
         <main class="main-content">
             <div class="header">
                 <h1>SMTP Service Tester</h1>
-                <p>Test your SMTP configurations and send test emails</p>
+                <p>Test your SMTP configurations and send real test emails</p>
             </div>
 
             <div class="content">
+                <div class="warning-box">
+                    <strong>⚠️ Important: CORS & Security</strong>
+                    This tool uses EmailJS service to send real emails. You need to set up a free EmailJS account at emailjs.com and configure your SMTP service there. Direct SMTP connections from browsers are blocked by CORS policies.
+                </div>
+
                 <div class="form-section">
-                    <h2>SMTP Configuration</h2>
+                    <h2>EmailJS Configuration</h2>
                     <div class="form-grid">
                         <div class="form-group full-width">
                             <label>Configuration Name</label>
                             <input type="text" id="configName" placeholder="e.g., Gmail SMTP, Office 365">
                         </div>
+                        <div class="form-group">
+                            <label>EmailJS Service ID</label>
+                            <input type="text" id="serviceId" placeholder="service_xxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label>EmailJS Template ID</label>
+                            <input type="text" id="templateId" placeholder="template_xxxxxxx">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>EmailJS Public Key</label>
+                            <input type="text" id="publicKey" placeholder="Your public key from EmailJS">
+                        </div>
+                    </div>
+
+                    <h2 style="margin-top: 30px;">SMTP Details (for reference)</h2>
+                    <div class="form-grid">
                         <div class="form-group">
                             <label>SMTP Host</label>
                             <input type="text" id="smtpHost" placeholder="smtp.gmail.com">
@@ -437,20 +499,12 @@
                             <input type="text" id="username" placeholder="your-email@example.com">
                         </div>
                         <div class="form-group">
-                            <label>Password / App Password</label>
-                            <input type="password" id="password" placeholder="Enter password">
-                        </div>
-                        <div class="form-group">
                             <label>Encryption</label>
                             <select id="encryption">
                                 <option value="tls">TLS</option>
                                 <option value="ssl">SSL</option>
                                 <option value="none">None</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Timeout (seconds)</label>
-                            <input type="number" id="timeout" placeholder="30" value="30">
                         </div>
                     </div>
                     <div class="button-group">
@@ -463,8 +517,16 @@
                     <h2>Test Email</h2>
                     <div class="form-grid">
                         <div class="form-group">
+                            <label>From Name</label>
+                            <input type="text" id="fromName" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
                             <label>From Email</label>
                             <input type="email" id="fromEmail" placeholder="sender@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>To Name</label>
+                            <input type="text" id="toName" placeholder="Recipient Name">
                         </div>
                         <div class="form-group">
                             <label>To Email</label>
@@ -472,7 +534,7 @@
                         </div>
                         <div class="form-group full-width">
                             <label>Subject</label>
-                            <input type="text" id="subject" placeholder="SMTP Test Email">
+                            <input type="text" id="subject" placeholder="SMTP Test Email" value="SMTP Test Email">
                         </div>
                         <div class="form-group full-width">
                             <label>Message Body</label>
@@ -480,12 +542,12 @@
                         </div>
                     </div>
                     <div class="button-group">
-                        <button class="btn btn-primary" onclick="testSMTP()">Send Test Email</button>
+                        <button class="btn btn-primary" id="sendBtn" onclick="sendEmail()">Send Test Email</button>
                     </div>
                 </div>
 
                 <div id="resultBox" class="result-box" style="display: none;">
-                    <h3>Test Result</h3>
+                    <h3>Result</h3>
                     <div id="resultContent" class="result-content"></div>
                 </div>
             </div>
@@ -506,12 +568,12 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         let credentials = {};
         let currentCredentialId = null;
         let deleteCredentialId = null;
 
-        // Load credentials on page load
         window.onload = function() {
             loadCredentials();
         };
@@ -549,9 +611,9 @@
                 item.className = 'credential-item' + (id === currentCredentialId ? ' active' : '');
                 item.innerHTML = `
                     <h3>${cred.name}</h3>
-                    <p><strong>Host:</strong> ${cred.host}:${cred.port}</p>
-                    <p><strong>User:</strong> ${cred.username}</p>
-                    <p><strong>Encryption:</strong> ${cred.encryption.toUpperCase()}</p>
+                    <p><strong>Service:</strong> ${cred.serviceId || 'N/A'}</p>
+                    <p><strong>Template:</strong> ${cred.templateId || 'N/A'}</p>
+                    <p><strong>Host:</strong> ${cred.host || 'N/A'}:${cred.port || 'N/A'}</p>
                     <div class="credential-actions">
                         <button class="btn-edit" onclick="loadCredential('${id}')">Load</button>
                         <button class="btn-delete" onclick="deleteCredential('${id}')">Delete</button>
@@ -563,27 +625,29 @@
 
         function saveCredential() {
             const name = document.getElementById('configName').value.trim();
+            const serviceId = document.getElementById('serviceId').value.trim();
+            const templateId = document.getElementById('templateId').value.trim();
+            const publicKey = document.getElementById('publicKey').value.trim();
             const host = document.getElementById('smtpHost').value.trim();
             const port = document.getElementById('smtpPort').value.trim();
             const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
             const encryption = document.getElementById('encryption').value;
-            const timeout = document.getElementById('timeout').value.trim();
 
-            if (!name || !host || !port || !username || !password) {
-                showResult('Please fill in all required fields', 'error');
+            if (!name) {
+                showResult('Please enter a configuration name', 'error');
                 return;
             }
 
             const id = currentCredentialId || 'cred_' + Date.now();
             credentials[id] = {
                 name,
+                serviceId,
+                templateId,
+                publicKey,
                 host,
                 port,
                 username,
-                password,
-                encryption,
-                timeout
+                encryption
             };
 
             saveToLocalStorage();
@@ -597,12 +661,13 @@
             if (!cred) return;
 
             document.getElementById('configName').value = cred.name;
-            document.getElementById('smtpHost').value = cred.host;
-            document.getElementById('smtpPort').value = cred.port;
-            document.getElementById('username').value = cred.username;
-            document.getElementById('password').value = cred.password;
-            document.getElementById('encryption').value = cred.encryption;
-            document.getElementById('timeout').value = cred.timeout;
+            document.getElementById('serviceId').value = cred.serviceId || '';
+            document.getElementById('templateId').value = cred.templateId || '';
+            document.getElementById('publicKey').value = cred.publicKey || '';
+            document.getElementById('smtpHost').value = cred.host || '';
+            document.getElementById('smtpPort').value = cred.port || '587';
+            document.getElementById('username').value = cred.username || '';
+            document.getElementById('encryption').value = cred.encryption || 'tls';
 
             currentCredentialId = id;
             renderCredentialsList();
@@ -644,28 +709,30 @@
 
         function clearForm() {
             document.getElementById('configName').value = '';
+            document.getElementById('serviceId').value = '';
+            document.getElementById('templateId').value = '';
+            document.getElementById('publicKey').value = '';
             document.getElementById('smtpHost').value = '';
             document.getElementById('smtpPort').value = '587';
             document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
             document.getElementById('encryption').value = 'tls';
-            document.getElementById('timeout').value = '30';
             currentCredentialId = null;
             renderCredentialsList();
         }
 
-        function testSMTP() {
-            const host = document.getElementById('smtpHost').value.trim();
-            const port = document.getElementById('smtpPort').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
+        async function sendEmail() {
+            const serviceId = document.getElementById('serviceId').value.trim();
+            const templateId = document.getElementById('templateId').value.trim();
+            const publicKey = document.getElementById('publicKey').value.trim();
+            const fromName = document.getElementById('fromName').value.trim();
             const fromEmail = document.getElementById('fromEmail').value.trim();
+            const toName = document.getElementById('toName').value.trim();
             const toEmail = document.getElementById('toEmail').value.trim();
             const subject = document.getElementById('subject').value.trim();
             const message = document.getElementById('messageBody').value.trim();
 
-            if (!host || !port || !username || !password) {
-                showResult('Please fill in SMTP configuration fields', 'error');
+            if (!serviceId || !templateId || !publicKey) {
+                showResult('Please fill in EmailJS credentials (Service ID, Template ID, and Public Key)', 'error');
                 return;
             }
 
@@ -674,36 +741,52 @@
                 return;
             }
 
-            // Simulate SMTP test (in real scenario, this would make a backend API call)
-            showResult('Testing SMTP connection...', 'info');
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="spinner"></span>Sending...';
+            
+            showResult('Sending email via EmailJS...', 'info');
 
-            setTimeout(() => {
-                const result = `
-SMTP Test Simulation
-=====================
-⚠️ NOTE: This is a frontend-only simulation. Real SMTP testing requires a backend server.
+            try {
+                emailjs.init(publicKey);
 
-Configuration:
-- Host: ${host}
-- Port: ${port}
-- Username: ${username}
-- Encryption: ${document.getElementById('encryption').value.toUpperCase()}
+                const templateParams = {
+                    from_name: fromName || 'SMTP Tester',
+                    from_email: fromEmail,
+                    to_name: toName || 'Recipient',
+                    to_email: toEmail,
+                    subject: subject,
+                    message: message,
+                    reply_to: fromEmail
+                };
 
-Email Details:
-- From: ${fromEmail}
-- To: ${toEmail}
-- Subject: ${subject}
+                const response = await emailjs.send(serviceId, templateId, templateParams);
 
-Status: ✓ Configuration appears valid
-Recommendation: Implement backend API to actually test SMTP connection
-
-For real SMTP testing, you'll need:
-1. A backend server (Node.js, Python, PHP, etc.)
-2. SMTP library (nodemailer, smtplib, PHPMailer, etc.)
-3. Proper security measures for handling credentials
-                `;
-                showResult(result, 'success');
-            }, 1500);
+                showResult(
+                    `✓ Email sent successfully!\n\n` +
+                    `Status: ${response.status}\n` +
+                    `Response: ${response.text}\n\n` +
+                    `From: ${fromEmail}\n` +
+                    `To: ${toEmail}\n` +
+                    `Subject: ${subject}\n\n` +
+                    `The email has been delivered using EmailJS service.`,
+                    'success'
+                );
+            } catch (error) {
+                showResult(
+                    `✗ Failed to send email\n\n` +
+                    `Error: ${error.text || error.message || 'Unknown error'}\n\n` +
+                    `Please check:\n` +
+                    `1. EmailJS credentials are correct\n` +
+                    `2. Service and template are properly configured at emailjs.com\n` +
+                    `3. Your EmailJS account is active\n` +
+                    `4. Template variables match (from_name, to_email, subject, message)`,
+                    'error'
+                );
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = 'Send Test Email';
+            }
         }
 
         function showResult(message, type) {
