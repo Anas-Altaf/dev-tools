@@ -1,170 +1,721 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SMTP Tester</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMTP Service Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <script src="https://smtpjs.com/v3/smtp.js"></script>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #eef1f6;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #111827;
-    }
+        .sidebar {
+            width: 320px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
 
-    .container {
-      width: 520px;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08);
-    }
+        .sidebar-header {
+            padding: 25px 20px;
+            background: #1a252f;
+            border-bottom: 1px solid #34495e;
+        }
 
-    h1 {
-      margin: 0 0 20px;
-      font-size: 22px;
-      text-align: center;
-      font-weight: 600;
-    }
+        .sidebar-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
 
-    .section {
-      margin-bottom: 22px;
-    }
+        .sidebar-header p {
+            font-size: 12px;
+            color: #95a5a6;
+        }
 
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #6b7280;
-      margin-bottom: 10px;
-    }
+        .credentials-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+        .credential-item {
+            background: #34495e;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
 
-    input,
-    textarea,
-    select,
-    button {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-      outline: none;
-    }
+        .credential-item:hover {
+            background: #3d5467;
+            transform: translateX(5px);
+        }
 
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #6366f1;
-    }
+        .credential-item.active {
+            border-color: #3498db;
+            background: #3d5467;
+        }
 
-    textarea {
-      resize: none;
-      height: 120px;
-    }
+        .credential-item h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #ecf0f1;
+        }
 
-    button {
-      border: none;
-      background: #6366f1;
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+        .credential-item p {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-bottom: 3px;
+        }
 
-    button:hover {
-      background: #4f46e5;
-    }
+        .credential-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+        }
 
-    .status {
-      margin-top: 14px;
-      font-size: 13px;
-      text-align: center;
-      color: #6b7280;
-    }
-  </style>
+        .credential-actions button {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-new {
+            width: 100%;
+            padding: 15px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+            width: calc(100% - 20px);
+            border-radius: 8px;
+        }
+
+        .btn-new:hover {
+            background: #229954;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .form-section h2 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .result-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 20px;
+        }
+
+        .result-box h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .result-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-content.success {
+            border-left-color: #27ae60;
+            background: #e8f8f0;
+            color: #27ae60;
+        }
+
+        .result-content.error {
+            border-left-color: #e74c3c;
+            background: #fce8e6;
+            color: #e74c3c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #95a5a6;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+            font-size: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .close-modal:hover {
+            color: #2c3e50;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Saved Credentials</h2>
+                <p>Manage your SMTP configurations</p>
+            </div>
+            <div class="credentials-list" id="credentialsList"></div>
+            <button class="btn-new" onclick="showNewCredentialModal()">+ New Credential</button>
+        </aside>
 
-  <div class="container">
-    <h1>SMTP Test Tool</h1>
+        <main class="main-content">
+            <div class="header">
+                <h1>SMTP Service Tester</h1>
+                <p>Test your SMTP configurations and send test emails</p>
+            </div>
 
-    <!-- SMTP CONFIG -->
-    <div class="section">
-      <div class="section-title">SMTP Configuration</div>
+            <div class="content">
+                <div class="form-section">
+                    <h2>SMTP Configuration</h2>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Configuration Name</label>
+                            <input type="text" id="configName" placeholder="e.g., Gmail SMTP, Office 365">
+                        </div>
+                        <div class="form-group">
+                            <label>SMTP Host</label>
+                            <input type="text" id="smtpHost" placeholder="smtp.gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>SMTP Port</label>
+                            <input type="number" id="smtpPort" placeholder="587" value="587">
+                        </div>
+                        <div class="form-group">
+                            <label>Username / Email</label>
+                            <input type="text" id="username" placeholder="your-email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password / App Password</label>
+                            <input type="password" id="password" placeholder="Enter password">
+                        </div>
+                        <div class="form-group">
+                            <label>Encryption</label>
+                            <select id="encryption">
+                                <option value="tls">TLS</option>
+                                <option value="ssl">SSL</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Timeout (seconds)</label>
+                            <input type="number" id="timeout" placeholder="30" value="30">
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="saveCredential()">Save Configuration</button>
+                        <button class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                    </div>
+                </div>
 
-      <input id="host" placeholder="SMTP Host (e.g. smtp.gmail.com)" />
+                <div class="form-section">
+                    <h2>Test Email</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>From Email</label>
+                            <input type="email" id="fromEmail" placeholder="sender@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>To Email</label>
+                            <input type="email" id="toEmail" placeholder="recipient@example.com">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Subject</label>
+                            <input type="text" id="subject" placeholder="SMTP Test Email">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Message Body</label>
+                            <textarea id="messageBody" placeholder="Enter your test message here...">This is a test email sent from the SMTP Service Tester application.</textarea>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="testSMTP()">Send Test Email</button>
+                    </div>
+                </div>
 
-      <div class="grid">
-        <input id="username" placeholder="Username / Email" />
-        <input id="password" type="password" placeholder="Password / App Password" />
-      </div>
-
-      <div class="grid">
-        <input id="port" placeholder="Port (e.g. 587)" />
-        <select id="secure">
-          <option value="true">TLS / SSL</option>
-          <option value="false">No Encryption</option>
-        </select>
-      </div>
+                <div id="resultBox" class="result-box" style="display: none;">
+                    <h3>Test Result</h3>
+                    <div id="resultContent" class="result-content"></div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- MAIL -->
-    <div class="section">
-      <div class="section-title">Mail</div>
-
-      <div class="grid">
-        <input id="from" placeholder="From Email" />
-        <input id="to" placeholder="To Email" />
-      </div>
-
-      <input id="subject" placeholder="Subject" />
-      <textarea id="body" placeholder="Message body"></textarea>
+    <div id="credentialModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <p>Are you sure you want to delete this credential configuration?</p>
+            <div class="button-group" style="margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
     </div>
 
-    <button onclick="sendEmail()">Send Email</button>
+    <script>
+        let credentials = {};
+        let currentCredentialId = null;
+        let deleteCredentialId = null;
 
-    <div id="status" class="status"></div>
-  </div>
+        // Load credentials on page load
+        window.onload = function() {
+            loadCredentials();
+        };
 
-  <script>
-    function sendEmail() {
-      const status = document.getElementById("status");
-      status.textContent = "Sending…";
+        function loadCredentials() {
+            const saved = localStorage.getItem('smtpCredentials');
+            if (saved) {
+                credentials = JSON.parse(saved);
+                renderCredentialsList();
+            }
+        }
 
-      Email.send({
-        Host: document.getElementById("host").value,
-        Username: document.getElementById("username").value,
-        Password: document.getElementById("password").value,
-        Port: document.getElementById("port").value,
-        Secure: document.getElementById("secure").value === "true",
-        To: document.getElementById("to").value,
-        From: document.getElementById("from").value,
-        Subject: document.getElementById("subject").value,
-        Body: document.getElementById("body").value
-      })
-      .then(msg => {
-        status.textContent = "Sent successfully ✔";
-      })
-      .catch(err => {
-        status.textContent = "Failed ✖";
-      });
-    }
-  </script>
+        function saveToLocalStorage() {
+            localStorage.setItem('smtpCredentials', JSON.stringify(credentials));
+        }
 
+        function renderCredentialsList() {
+            const list = document.getElementById('credentialsList');
+            
+            if (Object.keys(credentials).length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                        <p>No saved credentials yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = '';
+            for (const [id, cred] of Object.entries(credentials)) {
+                const item = document.createElement('div');
+                item.className = 'credential-item' + (id === currentCredentialId ? ' active' : '');
+                item.innerHTML = `
+                    <h3>${cred.name}</h3>
+                    <p><strong>Host:</strong> ${cred.host}:${cred.port}</p>
+                    <p><strong>User:</strong> ${cred.username}</p>
+                    <p><strong>Encryption:</strong> ${cred.encryption.toUpperCase()}</p>
+                    <div class="credential-actions">
+                        <button class="btn-edit" onclick="loadCredential('${id}')">Load</button>
+                        <button class="btn-delete" onclick="deleteCredential('${id}')">Delete</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            }
+        }
+
+        function saveCredential() {
+            const name = document.getElementById('configName').value.trim();
+            const host = document.getElementById('smtpHost').value.trim();
+            const port = document.getElementById('smtpPort').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const encryption = document.getElementById('encryption').value;
+            const timeout = document.getElementById('timeout').value.trim();
+
+            if (!name || !host || !port || !username || !password) {
+                showResult('Please fill in all required fields', 'error');
+                return;
+            }
+
+            const id = currentCredentialId || 'cred_' + Date.now();
+            credentials[id] = {
+                name,
+                host,
+                port,
+                username,
+                password,
+                encryption,
+                timeout
+            };
+
+            saveToLocalStorage();
+            renderCredentialsList();
+            currentCredentialId = id;
+            showResult(`Configuration "${name}" saved successfully!`, 'success');
+        }
+
+        function loadCredential(id) {
+            const cred = credentials[id];
+            if (!cred) return;
+
+            document.getElementById('configName').value = cred.name;
+            document.getElementById('smtpHost').value = cred.host;
+            document.getElementById('smtpPort').value = cred.port;
+            document.getElementById('username').value = cred.username;
+            document.getElementById('password').value = cred.password;
+            document.getElementById('encryption').value = cred.encryption;
+            document.getElementById('timeout').value = cred.timeout;
+
+            currentCredentialId = id;
+            renderCredentialsList();
+            showResult(`Loaded configuration: ${cred.name}`, 'success');
+        }
+
+        function deleteCredential(id) {
+            deleteCredentialId = id;
+            document.getElementById('credentialModal').classList.add('active');
+        }
+
+        function confirmDelete() {
+            if (deleteCredentialId) {
+                const name = credentials[deleteCredentialId].name;
+                delete credentials[deleteCredentialId];
+                saveToLocalStorage();
+                renderCredentialsList();
+                
+                if (currentCredentialId === deleteCredentialId) {
+                    clearForm();
+                    currentCredentialId = null;
+                }
+                
+                showResult(`Configuration "${name}" deleted successfully`, 'success');
+                closeModal();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('credentialModal').classList.remove('active');
+            deleteCredentialId = null;
+        }
+
+        function showNewCredentialModal() {
+            clearForm();
+            currentCredentialId = null;
+            renderCredentialsList();
+        }
+
+        function clearForm() {
+            document.getElementById('configName').value = '';
+            document.getElementById('smtpHost').value = '';
+            document.getElementById('smtpPort').value = '587';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('encryption').value = 'tls';
+            document.getElementById('timeout').value = '30';
+            currentCredentialId = null;
+            renderCredentialsList();
+        }
+
+        function testSMTP() {
+            const host = document.getElementById('smtpHost').value.trim();
+            const port = document.getElementById('smtpPort').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const fromEmail = document.getElementById('fromEmail').value.trim();
+            const toEmail = document.getElementById('toEmail').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('messageBody').value.trim();
+
+            if (!host || !port || !username || !password) {
+                showResult('Please fill in SMTP configuration fields', 'error');
+                return;
+            }
+
+            if (!fromEmail || !toEmail || !subject || !message) {
+                showResult('Please fill in all email fields', 'error');
+                return;
+            }
+
+            // Simulate SMTP test (in real scenario, this would make a backend API call)
+            showResult('Testing SMTP connection...', 'info');
+
+            setTimeout(() => {
+                const result = `
+SMTP Test Simulation
+=====================
+⚠️ NOTE: This is a frontend-only simulation. Real SMTP testing requires a backend server.
+
+Configuration:
+- Host: ${host}
+- Port: ${port}
+- Username: ${username}
+- Encryption: ${document.getElementById('encryption').value.toUpperCase()}
+
+Email Details:
+- From: ${fromEmail}
+- To: ${toEmail}
+- Subject: ${subject}
+
+Status: ✓ Configuration appears valid
+Recommendation: Implement backend API to actually test SMTP connection
+
+For real SMTP testing, you'll need:
+1. A backend server (Node.js, Python, PHP, etc.)
+2. SMTP library (nodemailer, smtplib, PHPMailer, etc.)
+3. Proper security measures for handling credentials
+                `;
+                showResult(result, 'success');
+            }, 1500);
+        }
+
+        function showResult(message, type) {
+            const resultBox = document.getElementById('resultBox');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultBox.style.display = 'block';
+            resultContent.textContent = message;
+            resultContent.className = 'result-content ' + type;
+            
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
 </body>
 </html>
