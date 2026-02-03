@@ -13,108 +13,126 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
+            background: #667eea;
+            padding: 5px;
             min-height: 100vh;
+            font-size: 10px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 3px 8px;
+            font-size: 0.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 1em;
+            font-weight: 600;
         }
 
         .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
+            display: none;
         }
 
         .content {
-            padding: 30px;
+            padding: 5px;
         }
 
         .section {
-            margin-bottom: 30px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 25px;
-            border-left: 5px solid #667eea;
+            margin-bottom: 3px;
+            background: none;
+            border-radius: 0;
+            padding: 2px 3px;
+            border-left: 2px solid #667eea;
+            border-bottom: 1px solid #eee;
         }
 
         .section h2 {
             color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 2px;
+            font-size: 0.85em;
+            display: inline-block;
+            gap: 3px;
+            font-weight: 700;
+            margin-right: 8px;
         }
 
         .section h3 {
             color: #764ba2;
-            margin: 20px 0 15px 0;
-            font-size: 1.3em;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 10px;
+            margin: 5px 0 3px 0;
+            font-size: 0.8em;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 2px;
         }
 
         .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            font-size: 0.75em;
+            line-height: 1.4;
         }
 
         .info-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            display: inline;
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            margin-right: 8px;
         }
 
         .info-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            background: none;
         }
 
         .info-label {
             font-weight: 600;
-            color: #555;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: #667eea;
+            margin-bottom: 0;
+            font-size: 1em;
+            text-transform: none;
+            letter-spacing: 0;
+            display: inline;
+        }
+
+        .info-label::after {
+            content: ": ";
         }
 
         .info-value {
             color: #333;
-            font-size: 1.1em;
-            word-break: break-all;
+            font-size: 1em;
+            word-break: break-word;
+            display: inline;
+        }
+
+        .info-item::after {
+            content: " • ";
+            color: #ccc;
+            margin-left: 8px;
+        }
+
+        .info-item:last-child::after {
+            content: "";
         }
 
         .status-badge {
             display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
+            padding: 1px 4px;
+            border-radius: 8px;
+            font-size: 0.65em;
             font-weight: 600;
-            margin-left: 10px;
+            margin-left: 3px;
         }
 
         .status-online {
@@ -129,39 +147,38 @@
 
         .performance-bar {
             background: #e0e0e0;
-            height: 25px;
-            border-radius: 15px;
+            height: 12px;
+            border-radius: 6px;
             overflow: hidden;
-            margin-top: 10px;
+            margin-top: 2px;
         }
 
         .performance-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: #667eea;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.65em;
             transition: width 0.3s;
         }
 
         .table-responsive {
             overflow-x: auto;
-            margin-top: 15px;
+            margin-top: 3px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            border-radius: 8px;
-            overflow: hidden;
+            font-size: 0.7em;
         }
 
         th, td {
-            padding: 12px;
+            padding: 2px 4px;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
         }
@@ -171,7 +188,7 @@
             color: white;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.85em;
+            font-size: 0.7em;
         }
 
         tr:hover {
@@ -179,65 +196,67 @@
         }
 
         .refresh-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1em;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
             font-weight: 600;
             cursor: pointer;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 3px 0;
         }
 
         .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        .refresh-btn:active {
-            transform: translateY(0);
+            background: #764ba2;
         }
 
         .warning {
             background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 5px;
+            border-left: 2px solid #ffc107;
+            padding: 4px;
+            margin: 3px 0;
+            border-radius: 2px;
             color: #856404;
+            font-size: 0.7em;
         }
 
         .code-block {
             background: #2d2d2d;
             color: #f8f8f2;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 4px;
+            border-radius: 2px;
             overflow-x: auto;
             font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            margin-top: 10px;
+            font-size: 0.65em;
+            margin-top: 3px;
+            max-height: 100px;
+            overflow-y: auto;
         }
 
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 5px;
             color: #667eea;
+            font-size: 0.75em;
         }
 
         .icon {
-            font-size: 1.5em;
+            font-size: 1em;
+        }
+
+        .sections-container {
+            display: block;
         }
 
         @media (max-width: 768px) {
-            .info-grid {
-                grid-template-columns: 1fr;
+            .header h1 {
+                font-size: 0.85em;
             }
             
-            .header h1 {
-                font-size: 1.8em;
+            .refresh-btn {
+                font-size: 0.7em;
+                padding: 3px 8px;
             }
         }
     </style>
@@ -245,100 +264,101 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🖥️ Complete System Information Dashboard</h1>
-            <p>Comprehensive client-side system diagnostics and information</p>
-            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh All Data</button>
+            <h1>🖥️ System Info Dashboard</h1>
+            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
         </div>
 
         <div class="content">
-            <!-- Browser Information -->
-            <div class="section" id="browser-info">
-                <h2>🌐 Browser Information</h2>
-                <div class="info-grid" id="browser-grid"></div>
-            </div>
+            <div class="sections-container">
+                <!-- Browser Information -->
+                <div class="section" id="browser-info">
+                    <h2>🌐 Browser</h2>
+                    <div class="info-grid" id="browser-grid"></div>
+                </div>
 
-            <!-- System Information -->
-            <div class="section" id="system-info">
-                <h2>💻 System & Hardware Information</h2>
-                <div class="info-grid" id="system-grid"></div>
-            </div>
+                <!-- System Information -->
+                <div class="section" id="system-info">
+                    <h2>💻 System</h2>
+                    <div class="info-grid" id="system-grid"></div>
+                </div>
 
-            <!-- Network Information -->
-            <div class="section" id="network-info">
-                <h2>🌍 Network Information</h2>
-                <div class="info-grid" id="network-grid"></div>
-            </div>
+                <!-- Network Information -->
+                <div class="section" id="network-info">
+                    <h2>🌍 Network</h2>
+                    <div class="info-grid" id="network-grid"></div>
+                </div>
 
-            <!-- Screen & Display -->
-            <div class="section" id="screen-info">
-                <h2>🖥️ Screen & Display Information</h2>
-                <div class="info-grid" id="screen-grid"></div>
-            </div>
+                <!-- Screen & Display -->
+                <div class="section" id="screen-info">
+                    <h2>🖥️ Screen</h2>
+                    <div class="info-grid" id="screen-grid"></div>
+                </div>
 
-            <!-- Performance & Memory -->
-            <div class="section" id="performance-info">
-                <h2>⚡ Performance & Memory</h2>
-                <div id="performance-content"></div>
-            </div>
+                <!-- Performance & Memory -->
+                <div class="section" id="performance-info">
+                    <h2>⚡ Performance</h2>
+                    <div id="performance-content"></div>
+                </div>
 
-            <!-- Storage -->
-            <div class="section" id="storage-info">
-                <h2>💾 Storage Information</h2>
-                <div id="storage-content"></div>
-            </div>
+                <!-- Storage -->
+                <div class="section" id="storage-info">
+                    <h2>💾 Storage</h2>
+                    <div id="storage-content"></div>
+                </div>
 
-            <!-- Device Sensors & Features -->
-            <div class="section" id="device-info">
-                <h2>📱 Device Sensors & Features</h2>
-                <div id="device-content"></div>
-            </div>
+                <!-- Device Sensors & Features -->
+                <div class="section" id="device-info">
+                    <h2>📱 Sensors</h2>
+                    <div id="device-content"></div>
+                </div>
 
-            <!-- Media Devices -->
-            <div class="section" id="media-info">
-                <h2>🎤 Media Devices</h2>
-                <div id="media-content"></div>
-            </div>
+                <!-- Media Devices -->
+                <div class="section" id="media-info">
+                    <h2>🎤 Media</h2>
+                    <div id="media-content"></div>
+                </div>
 
-            <!-- Permissions -->
-            <div class="section" id="permissions-info">
-                <h2>🔒 Permissions Status</h2>
-                <div id="permissions-content"></div>
-            </div>
+                <!-- Permissions -->
+                <div class="section" id="permissions-info">
+                    <h2>🔒 Permissions</h2>
+                    <div id="permissions-content"></div>
+                </div>
 
-            <!-- WebGL & Graphics -->
-            <div class="section" id="webgl-info">
-                <h2>🎮 WebGL & Graphics Information</h2>
-                <div id="webgl-content"></div>
-            </div>
+                <!-- WebGL & Graphics -->
+                <div class="section" id="webgl-info">
+                    <h2>🎮 Graphics</h2>
+                    <div id="webgl-content"></div>
+                </div>
 
-            <!-- Fonts -->
-            <div class="section" id="fonts-info">
-                <h2>🔤 System Fonts</h2>
-                <div id="fonts-content"></div>
-            </div>
+                <!-- Fonts -->
+                <div class="section" id="fonts-info">
+                    <h2>🔤 Fonts</h2>
+                    <div id="fonts-content"></div>
+                </div>
 
-            <!-- Plugins & Extensions -->
-            <div class="section" id="plugins-info">
-                <h2>🔌 Plugins & Extensions</h2>
-                <div id="plugins-content"></div>
-            </div>
+                <!-- Plugins & Extensions -->
+                <div class="section" id="plugins-info">
+                    <h2>🔌 Plugins</h2>
+                    <div id="plugins-content"></div>
+                </div>
 
-            <!-- Geolocation -->
-            <div class="section" id="geo-info">
-                <h2>📍 Geolocation Information</h2>
-                <div id="geo-content"></div>
-            </div>
+                <!-- Geolocation -->
+                <div class="section" id="geo-info">
+                    <h2>📍 Location</h2>
+                    <div id="geo-content"></div>
+                </div>
 
-            <!-- Battery -->
-            <div class="section" id="battery-info">
-                <h2>🔋 Battery Information</h2>
-                <div id="battery-content"></div>
-            </div>
+                <!-- Battery -->
+                <div class="section" id="battery-info">
+                    <h2>🔋 Battery</h2>
+                    <div id="battery-content"></div>
+                </div>
 
-            <!-- Date & Time -->
-            <div class="section" id="datetime-info">
-                <h2>🕐 Date & Time Information</h2>
-                <div class="info-grid" id="datetime-grid"></div>
+                <!-- Date & Time -->
+                <div class="section" id="datetime-info">
+                    <h2>🕐 Date/Time</h2>
+                    <div class="info-grid" id="datetime-grid"></div>
+                </div>
             </div>
         </div>
     </div>
