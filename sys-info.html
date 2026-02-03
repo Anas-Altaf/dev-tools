@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete System Information Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+            word-break: break-all;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-online {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-offline {
+            background: #f44336;
+            color: white;
+        }
+
+        .performance-bar {
+            background: #e0e0e0;
+            height: 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: width 0.3s;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #856404;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .icon {
+            font-size: 1.5em;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ Complete System Information Dashboard</h1>
+            <p>Comprehensive client-side system diagnostics and information</p>
+            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh All Data</button>
+        </div>
+
+        <div class="content">
+            <!-- Browser Information -->
+            <div class="section" id="browser-info">
+                <h2>🌐 Browser Information</h2>
+                <div class="info-grid" id="browser-grid"></div>
+            </div>
+
+            <!-- System Information -->
+            <div class="section" id="system-info">
+                <h2>💻 System & Hardware Information</h2>
+                <div class="info-grid" id="system-grid"></div>
+            </div>
+
+            <!-- Network Information -->
+            <div class="section" id="network-info">
+                <h2>🌍 Network Information</h2>
+                <div class="info-grid" id="network-grid"></div>
+            </div>
+
+            <!-- Screen & Display -->
+            <div class="section" id="screen-info">
+                <h2>🖥️ Screen & Display Information</h2>
+                <div class="info-grid" id="screen-grid"></div>
+            </div>
+
+            <!-- Performance & Memory -->
+            <div class="section" id="performance-info">
+                <h2>⚡ Performance & Memory</h2>
+                <div id="performance-content"></div>
+            </div>
+
+            <!-- Storage -->
+            <div class="section" id="storage-info">
+                <h2>💾 Storage Information</h2>
+                <div id="storage-content"></div>
+            </div>
+
+            <!-- Device Sensors & Features -->
+            <div class="section" id="device-info">
+                <h2>📱 Device Sensors & Features</h2>
+                <div id="device-content"></div>
+            </div>
+
+            <!-- Media Devices -->
+            <div class="section" id="media-info">
+                <h2>🎤 Media Devices</h2>
+                <div id="media-content"></div>
+            </div>
+
+            <!-- Permissions -->
+            <div class="section" id="permissions-info">
+                <h2>🔒 Permissions Status</h2>
+                <div id="permissions-content"></div>
+            </div>
+
+            <!-- WebGL & Graphics -->
+            <div class="section" id="webgl-info">
+                <h2>🎮 WebGL & Graphics Information</h2>
+                <div id="webgl-content"></div>
+            </div>
+
+            <!-- Fonts -->
+            <div class="section" id="fonts-info">
+                <h2>🔤 System Fonts</h2>
+                <div id="fonts-content"></div>
+            </div>
+
+            <!-- Plugins & Extensions -->
+            <div class="section" id="plugins-info">
+                <h2>🔌 Plugins & Extensions</h2>
+                <div id="plugins-content"></div>
+            </div>
+
+            <!-- Geolocation -->
+            <div class="section" id="geo-info">
+                <h2>📍 Geolocation Information</h2>
+                <div id="geo-content"></div>
+            </div>
+
+            <!-- Battery -->
+            <div class="section" id="battery-info">
+                <h2>🔋 Battery Information</h2>
+                <div id="battery-content"></div>
+            </div>
+
+            <!-- Date & Time -->
+            <div class="section" id="datetime-info">
+                <h2>🕐 Date & Time Information</h2>
+                <div class="info-grid" id="datetime-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility function to create info items
+        function createInfoItem(label, value) {
+            return `
+                <div class="info-item">
+                    <div class="info-label">${label}</div>
+                    <div class="info-value">${value}</div>
+                </div>
+            `;
+        }
+
+        // Browser Information
+        function getBrowserInfo() {
+            const nav = navigator;
+            const grid = document.getElementById('browser-grid');
+            
+            const browserInfo = [
+                ['User Agent', nav.userAgent],
+                ['Browser Name', nav.appName],
+                ['Browser Version', nav.appVersion],
+                ['Platform', nav.platform],
+                ['Product', nav.product],
+                ['Vendor', nav.vendor || 'N/A'],
+                ['Language', nav.language],
+                ['Languages', nav.languages ? nav.languages.join(', ') : 'N/A'],
+                ['Cookie Enabled', nav.cookieEnabled ? 'Yes' : 'No'],
+                ['Do Not Track', nav.doNotTrack || 'N/A'],
+                ['Online Status', nav.onLine ? '🟢 Online' : '🔴 Offline'],
+                ['Max Touch Points', nav.maxTouchPoints || 0],
+                ['Hardware Concurrency', nav.hardwareConcurrency || 'N/A'],
+                ['Device Memory', nav.deviceMemory ? `${nav.deviceMemory} GB` : 'N/A'],
+                ['PDF Viewer Enabled', nav.pdfViewerEnabled ? 'Yes' : 'No']
+            ];
+
+            grid.innerHTML = browserInfo.map(([label, value]) => createInfoItem(label, value)).join('');
+        }
+
+        // System Information
+        function getSystemInfo() {
+            const grid = document.getElementById('system-grid');
+            const nav = navigator;
+            
+            const systemInfo = [
+                ['OS', nav.oscpu || nav.platform],
+                ['CPU Cores', nav.hardwareConcurrency || 'N/A'],
+                ['Device Memory', nav.deviceMemory ? `${nav.deviceMemory} GB` : 'N/A'],
+                ['User Agent', nav.userAgent],
+                ['Build ID', nav.buildID || 'N/A'],
+                ['Product Sub', nav.productSub || 'N/A'],
+                ['Vendor Sub', nav.vendorSub || 'N/A']
+            ];
+
+            grid.innerHTML = systemInfo.map(([label, value]) => createInfoItem(label, value)).join('');
+        }
+
+        // Network Information
+        async function getNetworkInfo() {
+            const grid = document.getElementById('network-grid');
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            
+            let networkInfo = [
+                ['Online', navigator.onLine ? 'Yes' : 'No']
+            ];
+
+            if (connection) {
+                networkInfo = networkInfo.concat([
+                    ['Effective Type', connection.effectiveType || 'N/A'],
+                    ['Downlink', connection.downlink ? `${connection.downlink} Mbps` : 'N/A'],
+                    ['RTT', connection.rtt ? `${connection.rtt} ms` : 'N/A'],
+                    ['Save Data', connection.saveData ? 'Enabled' : 'Disabled'],
+                    ['Type', connection.type || 'N/A']
+                ]);
+            }
+
+            // Get IP information (external API)
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                networkInfo.push(['Public IP', data.ip]);
+            } catch (e) {
+                networkInfo.push(['Public IP', 'Unable to fetch']);
+            }
+
+            grid.innerHTML = networkInfo.map(([label, value]) => createInfoItem(label, value)).join('');
+        }
+
+        // Screen Information
+        function getScreenInfo() {
+            const grid = document.getElementById('screen-grid');
+            const screen = window.screen;
+            
+            const screenInfo = [
+                ['Screen Width', `${screen.width}px`],
+                ['Screen Height', `${screen.height}px`],
+                ['Available Width', `${screen.availWidth}px`],
+                ['Available Height', `${screen.availHeight}px`],
+                ['Color Depth', `${screen.colorDepth} bits`],
+                ['Pixel Depth', `${screen.pixelDepth} bits`],
+                ['Device Pixel Ratio', window.devicePixelRatio],
+                ['Orientation', screen.orientation ? screen.orientation.type : 'N/A'],
+                ['Orientation Angle', screen.orientation ? `${screen.orientation.angle}°` : 'N/A'],
+                ['Window Width', `${window.innerWidth}px`],
+                ['Window Height', `${window.innerHeight}px`],
+                ['Outer Width', `${window.outerWidth}px`],
+                ['Outer Height', `${window.outerHeight}px`],
+                ['Scroll X', `${window.scrollX}px`],
+                ['Scroll Y', `${window.scrollY}px`]
+            ];
+
+            grid.innerHTML = screenInfo.map(([label, value]) => createInfoItem(label, value)).join('');
+        }
+
+        // Performance & Memory
+        function getPerformanceInfo() {
+            const content = document.getElementById('performance-content');
+            let html = '<div class="info-grid">';
+
+            // Performance API
+            if (performance) {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                if (perfData) {
+                    html += createInfoItem('DNS Lookup', `${Math.round(perfData.domainLookupEnd - perfData.domainLookupStart)}ms`);
+                    html += createInfoItem('TCP Connection', `${Math.round(perfData.connectEnd - perfData.connectStart)}ms`);
+                    html += createInfoItem('Request Time', `${Math.round(perfData.responseStart - perfData.requestStart)}ms`);
+                    html += createInfoItem('Response Time', `${Math.round(perfData.responseEnd - perfData.responseStart)}ms`);
+                    html += createInfoItem('DOM Processing', `${Math.round(perfData.domComplete - perfData.domInteractive)}ms`);
+                    html += createInfoItem('Load Complete', `${Math.round(perfData.loadEventEnd - perfData.loadEventStart)}ms`);
+                }
+
+                // Memory (Chrome only)
+                if (performance.memory) {
+                    const memory = performance.memory;
+                    html += createInfoItem('JS Heap Size Limit', `${(memory.jsHeapSizeLimit / 1048576).toFixed(2)} MB`);
+                    html += createInfoItem('Total JS Heap Size', `${(memory.totalJSHeapSize / 1048576).toFixed(2)} MB`);
+                    html += createInfoItem('Used JS Heap Size', `${(memory.usedJSHeapSize / 1048576).toFixed(2)} MB`);
+                    
+                    const usedPercent = (memory.usedJSHeapSize / memory.jsHeapSizeLimit * 100).toFixed(2);
+                    html += `
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <div class="info-label">Memory Usage</div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: ${usedPercent}%">${usedPercent}%</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // Storage Information
+        async function getStorageInfo() {
+            const content = document.getElementById('storage-content');
+            let html = '<div class="info-grid">';
+
+            // localStorage
+            try {
+                const localStorageSize = new Blob(Object.values(localStorage)).size;
+                html += createInfoItem('LocalStorage Used', `${(localStorageSize / 1024).toFixed(2)} KB`);
+            } catch (e) {
+                html += createInfoItem('LocalStorage', 'Not available');
+            }
+
+            // sessionStorage
+            try {
+                const sessionStorageSize = new Blob(Object.values(sessionStorage)).size;
+                html += createInfoItem('SessionStorage Used', `${(sessionStorageSize / 1024).toFixed(2)} KB`);
+            } catch (e) {
+                html += createInfoItem('SessionStorage', 'Not available');
+            }
+
+            // IndexedDB
+            if (window.indexedDB) {
+                html += createInfoItem('IndexedDB', 'Supported');
+            }
+
+            // Storage Quota
+            if (navigator.storage && navigator.storage.estimate) {
+                try {
+                    const estimate = await navigator.storage.estimate();
+                    html += createInfoItem('Storage Quota', `${(estimate.quota / 1073741824).toFixed(2)} GB`);
+                    html += createInfoItem('Storage Used', `${(estimate.usage / 1048576).toFixed(2)} MB`);
+                    const usedPercent = (estimate.usage / estimate.quota * 100).toFixed(2);
+                    html += `
+                        <div class="info-item" style="grid-column: 1 / -1;">
+                            <div class="info-label">Storage Usage</div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: ${usedPercent}%">${usedPercent}%</div>
+                            </div>
+                        </div>
+                    `;
+                } catch (e) {
+                    html += createInfoItem('Storage Quota', 'Unable to estimate');
+                }
+            }
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // Device Sensors & Features
+        async function getDeviceInfo() {
+            const content = document.getElementById('device-content');
+            let html = '<div class="info-grid">';
+
+            // Device Orientation
+            html += createInfoItem('Device Orientation API', 'DeviceOrientationEvent' in window ? 'Supported' : 'Not Supported');
+            
+            // Device Motion
+            html += createInfoItem('Device Motion API', 'DeviceMotionEvent' in window ? 'Supported' : 'Not Supported');
+            
+            // Vibration
+            html += createInfoItem('Vibration API', 'vibrate' in navigator ? 'Supported' : 'Not Supported');
+            
+            // WebUSB
+            html += createInfoItem('WebUSB', 'usb' in navigator ? 'Supported' : 'Not Supported');
+            
+            // WebBluetooth
+            html += createInfoItem('Web Bluetooth', 'bluetooth' in navigator ? 'Supported' : 'Not Supported');
+            
+            // WebNFC
+            html += createInfoItem('Web NFC', 'nfc' in navigator ? 'Supported' : 'Not Supported');
+            
+            // Gamepad
+            html += createInfoItem('Gamepad API', 'getGamepads' in navigator ? 'Supported' : 'Not Supported');
+            
+            // Touch
+            html += createInfoItem('Touch Support', 'ontouchstart' in window ? 'Yes' : 'No');
+            html += createInfoItem('Max Touch Points', navigator.maxTouchPoints || 0);
+
+            // Pointer Events
+            html += createInfoItem('Pointer Events', 'PointerEvent' in window ? 'Supported' : 'Not Supported');
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // Media Devices
+        async function getMediaDevices() {
+            const content = document.getElementById('media-content');
+            let html = '';
+
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    
+                    const audioInputs = devices.filter(d => d.kind === 'audioinput');
+                    const audioOutputs = devices.filter(d => d.kind === 'audiooutput');
+                    const videoInputs = devices.filter(d => d.kind === 'videoinput');
+
+                    html += `
+                        <div class="info-grid">
+                            ${createInfoItem('Audio Input Devices', audioInputs.length)}
+                            ${createInfoItem('Audio Output Devices', audioOutputs.length)}
+                            ${createInfoItem('Video Input Devices', videoInputs.length)}
+                        </div>
+                        <h3>Device Details</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Label</th>
+                                        <th>Device ID</th>
+                                        <th>Group ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${devices.map(device => `
+                                        <tr>
+                                            <td>${device.kind}</td>
+                                            <td>${device.label || 'Unknown'}</td>
+                                            <td>${device.deviceId.substring(0, 20)}...</td>
+                                            <td>${device.groupId.substring(0, 20)}...</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } catch (e) {
+                    html = `<div class="warning">⚠️ Unable to enumerate media devices: ${e.message}</div>`;
+                }
+            } else {
+                html = '<div class="warning">⚠️ Media Devices API not supported</div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        // Permissions
+        async function getPermissions() {
+            const content = document.getElementById('permissions-content');
+            let html = '<div class="info-grid">';
+
+            const permissions = [
+                'geolocation', 'notifications', 'microphone', 'camera',
+                'clipboard-read', 'clipboard-write', 'midi', 'accelerometer',
+                'gyroscope', 'magnetometer', 'ambient-light-sensor'
+            ];
+
+            for (const perm of permissions) {
+                try {
+                    const result = await navigator.permissions.query({ name: perm });
+                    const status = result.state;
+                    const badge = status === 'granted' ? 'status-online' : 'status-offline';
+                    html += createInfoItem(perm, `<span class="status-badge ${badge}">${status}</span>`);
+                } catch (e) {
+                    html += createInfoItem(perm, 'N/A');
+                }
+            }
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // WebGL Information
+        function getWebGLInfo() {
+            const content = document.getElementById('webgl-content');
+            let html = '<div class="info-grid">';
+
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                
+                html += createInfoItem('WebGL Support', 'Yes');
+                html += createInfoItem('WebGL Version', gl.getParameter(gl.VERSION));
+                html += createInfoItem('GLSL Version', gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+                
+                if (debugInfo) {
+                    html += createInfoItem('Vendor', gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+                    html += createInfoItem('Renderer', gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+                }
+                
+                html += createInfoItem('Max Texture Size', gl.getParameter(gl.MAX_TEXTURE_SIZE));
+                html += createInfoItem('Max Viewport Dims', gl.getParameter(gl.MAX_VIEWPORT_DIMS).join(' x '));
+                html += createInfoItem('Max Vertex Attribs', gl.getParameter(gl.MAX_VERTEX_ATTRIBS));
+                html += createInfoItem('Max Varying Vectors', gl.getParameter(gl.MAX_VARYING_VECTORS));
+                html += createInfoItem('Max Vertex Uniform Vectors', gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS));
+                html += createInfoItem('Max Fragment Uniform Vectors', gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS));
+                
+                // Supported Extensions
+                const extensions = gl.getSupportedExtensions();
+                html += `
+                    </div>
+                    <h3>Supported Extensions (${extensions.length})</h3>
+                    <div class="code-block">${extensions.join('<br>')}</div>
+                    <div class="info-grid">
+                `;
+            } else {
+                html += createInfoItem('WebGL Support', 'No');
+            }
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // System Fonts Detection
+        function getSystemFonts() {
+            const content = document.getElementById('fonts-content');
+            const baseFonts = ['monospace', 'sans-serif', 'serif'];
+            const testFonts = [
+                'Arial', 'Verdana', 'Courier New', 'Georgia', 'Times New Roman', 
+                'Trebuchet MS', 'Comic Sans MS', 'Impact', 'Palatino',
+                'Helvetica', 'Calibri', 'Cambria', 'Consolas', 'Tahoma',
+                'Segoe UI', 'Lucida Console', 'Lucida Sans Unicode',
+                'MS Sans Serif', 'MS Serif', 'System'
+            ];
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            function getWidth(font, baseFont) {
+                context.font = `72px ${font}, ${baseFont}`;
+                return context.measureText('mmmmmmmmmmlli').width;
+            }
+
+            const detected = [];
+            
+            testFonts.forEach(font => {
+                let detected_font = false;
+                baseFonts.forEach(baseFont => {
+                    const baseWidth = getWidth(baseFont, baseFont);
+                    const testWidth = getWidth(font, baseFont);
+                    if (baseWidth !== testWidth) {
+                        detected_font = true;
+                    }
+                });
+                if (detected_font) {
+                    detected.push(font);
+                }
+            });
+
+            content.innerHTML = `
+                <div class="info-grid">
+                    ${createInfoItem('Detected Fonts', detected.length)}
+                </div>
+                <div class="code-block">${detected.join(', ')}</div>
+            `;
+        }
+
+        // Plugins
+        function getPlugins() {
+            const content = document.getElementById('plugins-content');
+            const plugins = navigator.plugins;
+            
+            if (plugins && plugins.length > 0) {
+                let html = `
+                    <div class="info-grid">
+                        ${createInfoItem('Total Plugins', plugins.length)}
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Filename</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                for (let i = 0; i < plugins.length; i++) {
+                    html += `
+                        <tr>
+                            <td>${plugins[i].name}</td>
+                            <td>${plugins[i].description}</td>
+                            <td>${plugins[i].filename}</td>
+                        </tr>
+                    `;
+                }
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                content.innerHTML = html;
+            } else {
+                content.innerHTML = '<div class="warning">⚠️ No plugins detected (common in modern browsers)</div>';
+            }
+        }
+
+        // Geolocation
+        function getGeolocation() {
+            const content = document.getElementById('geo-content');
+            
+            if ('geolocation' in navigator) {
+                content.innerHTML = '<div class="loading">🌍 Requesting location permission...</div>';
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const html = `
+                            <div class="info-grid">
+                                ${createInfoItem('Latitude', position.coords.latitude.toFixed(6))}
+                                ${createInfoItem('Longitude', position.coords.longitude.toFixed(6))}
+                                ${createInfoItem('Accuracy', `${position.coords.accuracy.toFixed(2)} meters`)}
+                                ${createInfoItem('Altitude', position.coords.altitude ? `${position.coords.altitude.toFixed(2)} meters` : 'N/A')}
+                                ${createInfoItem('Altitude Accuracy', position.coords.altitudeAccuracy ? `${position.coords.altitudeAccuracy.toFixed(2)} meters` : 'N/A')}
+                                ${createInfoItem('Heading', position.coords.heading ? `${position.coords.heading}°` : 'N/A')}
+                                ${createInfoItem('Speed', position.coords.speed ? `${position.coords.speed} m/s` : 'N/A')}
+                                ${createInfoItem('Timestamp', new Date(position.timestamp).toLocaleString())}
+                            </div>
+                        `;
+                        content.innerHTML = html;
+                    },
+                    (error) => {
+                        content.innerHTML = `<div class="warning">⚠️ Geolocation error: ${error.message}</div>`;
+                    }
+                );
+            } else {
+                content.innerHTML = '<div class="warning">⚠️ Geolocation not supported</div>';
+            }
+        }
+
+        // Battery
+        async function getBatteryInfo() {
+            const content = document.getElementById('battery-content');
+            
+            if ('getBattery' in navigator) {
+                try {
+                    const battery = await navigator.getBattery();
+                    
+                    const updateBatteryInfo = () => {
+                        const level = (battery.level * 100).toFixed(0);
+                        const html = `
+                            <div class="info-grid">
+                                ${createInfoItem('Charging', battery.charging ? '⚡ Yes' : '🔋 No')}
+                                ${createInfoItem('Battery Level', `${level}%`)}
+                                ${createInfoItem('Charging Time', battery.chargingTime !== Infinity ? `${Math.round(battery.chargingTime / 60)} minutes` : 'N/A')}
+                                ${createInfoItem('Discharging Time', battery.dischargingTime !== Infinity ? `${Math.round(battery.dischargingTime / 60)} minutes` : 'N/A')}
+                            </div>
+                            <div class="performance-bar">
+                                <div class="performance-fill" style="width: ${level}%">
+                                    ${battery.charging ? '⚡' : '🔋'} ${level}%
+                                </div>
+                            </div>
+                        `;
+                        content.innerHTML = html;
+                    };
+                    
+                    updateBatteryInfo();
+                    
+                    battery.addEventListener('chargingchange', updateBatteryInfo);
+                    battery.addEventListener('levelchange', updateBatteryInfo);
+                } catch (e) {
+                    content.innerHTML = `<div class="warning">⚠️ Battery API error: ${e.message}</div>`;
+                }
+            } else {
+                content.innerHTML = '<div class="warning">⚠️ Battery API not supported</div>';
+            }
+        }
+
+        // Date & Time
+        function getDateTimeInfo() {
+            const grid = document.getElementById('datetime-grid');
+            const now = new Date();
+            
+            const dtInfo = [
+                ['Current Date/Time', now.toString()],
+                ['ISO String', now.toISOString()],
+                ['UTC String', now.toUTCString()],
+                ['Locale String', now.toLocaleString()],
+                ['Timezone', Intl.DateTimeFormat().resolvedOptions().timeZone],
+                ['Timezone Offset', `${-now.getTimezoneOffset() / 60} hours`],
+                ['Unix Timestamp', Math.floor(now.getTime() / 1000)],
+                ['Day of Week', now.toLocaleDateString('en-US', { weekday: 'long' })],
+                ['Month', now.toLocaleDateString('en-US', { month: 'long' })],
+                ['Year', now.getFullYear()]
+            ];
+
+            grid.innerHTML = dtInfo.map(([label, value]) => createInfoItem(label, value)).join('');
+        }
+
+        // Initialize all functions
+        async function initializeAll() {
+            getBrowserInfo();
+            getSystemInfo();
+            await getNetworkInfo();
+            getScreenInfo();
+            getPerformanceInfo();
+            await getStorageInfo();
+            await getDeviceInfo();
+            await getMediaDevices();
+            await getPermissions();
+            getWebGLInfo();
+            getSystemFonts();
+            getPlugins();
+            getGeolocation();
+            await getBatteryInfo();
+            getDateTimeInfo();
+        }
+
+        // Run on page load
+        window.addEventListener('load', initializeAll);
+        
+        // Update online status
+        window.addEventListener('online', () => {
+            getNetworkInfo();
+            getBrowserInfo();
+        });
+        
+        window.addEventListener('offline', () => {
+            getNetworkInfo();
+            getBrowserInfo();
+        });
+
+        // Update on screen orientation change
+        if (screen.orientation) {
+            screen.orientation.addEventListener('change', getScreenInfo);
+        }
+    </script>
+</body>
+</html>
